@@ -10,5 +10,7 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(${PROJECT_NAME} test.cc)
+include_directories(../src)
+
+add_executable(${PROJECT_NAME} square-test.cc)
 target_link_libraries(${PROJECT_NAME} chsmv gtest_main)
