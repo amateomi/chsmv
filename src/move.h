@@ -15,9 +15,6 @@ namespace chsmv {
 
 enum class Promotion { TO_QUEEN, TO_ROOK, TO_BISHOP, TO_KNIGHT, NONE };
 
-constexpr Promotion CharToPromotion(char promotion);
-constexpr char PromotionToChar(Promotion promotion);
-
 class Move {
  public:
   explicit Move(const std::string& move);
