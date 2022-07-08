@@ -1,5 +1,6 @@
-set(HEADERS)
+set(HEADERS
+        square.h)
 set(SOURCES
-        chsmv.cc)
+        chsmv.cc square.cc)
 
-add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
