@@ -9,7 +9,6 @@
 #pragma ide diagnostic ignored "clion-misra-cpp2008-6-4-1"
 #pragma ide diagnostic ignored "clion-misra-cpp2008-6-3-1"
 #pragma ide diagnostic ignored "clion-misra-cpp2008-8-0-1"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-6-6-5"
 #pragma ide diagnostic ignored "clion-misra-cpp2008-5-0-4"
 #pragma ide diagnostic ignored "clion-misra-cpp2008-11-0-1"
 #pragma ide diagnostic ignored "clion-misra-cpp2008-18-4-1"
@@ -38,11 +37,11 @@ class SquareTest : public ::testing::Test {
   SquareTest() : a_1_{"a1"}, d_1_{"d1"}, a_3_{"a3"}, e_4_{"e4"}, h_8_{"h8"} {}
 
  protected:
-  const chsmv::Square a_1_;
-  const chsmv::Square d_1_;
-  const chsmv::Square a_3_;
-  const chsmv::Square e_4_;
-  const chsmv::Square h_8_;
+  chsmv::Square a_1_;
+  chsmv::Square d_1_;
+  chsmv::Square a_3_;
+  chsmv::Square e_4_;
+  chsmv::Square h_8_;
 };
 
 TEST_F(SquareTest, string_cast) {
