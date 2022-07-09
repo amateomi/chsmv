@@ -19,6 +19,9 @@ Square::Square(const std::string& square) {
   }
   position_ = square.front() - 'a' + (square.back() - '1') * 8;
 }
+
+Square::Square(char file, char rank) : Square(std::string{file, rank}) {}
+
 Square::operator std::string() const noexcept { return {GetFileChar(), GetRankChar()}; }
 
 int Square::GetFile() const noexcept { return position_ % 8; }

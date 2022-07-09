@@ -13,7 +13,9 @@ namespace chsmv {
 
 class Square {
  public:
+  Square() = default;
   explicit Square(const std::string& square);
+  Square(char file, char rank);
 
   explicit operator std::string() const noexcept;
 
@@ -23,7 +25,7 @@ class Square {
   [[nodiscard]] char GetRankChar() const noexcept;
 
  private:
-  int position_;
+  int position_{0};
 };
 
 }  // namespace chsmv
