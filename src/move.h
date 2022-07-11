@@ -7,8 +7,6 @@
 #ifndef CHSMV_SRC_MOVE_H_
 #define CHSMV_SRC_MOVE_H_
 
-#include <string>
-
 #include "square.h"
 
 namespace chsmv {
