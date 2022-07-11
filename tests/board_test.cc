@@ -17,7 +17,7 @@
 
 #include "gtest/gtest.h"
 
-TEST(BoardConstructorTest, constructor) {
+TEST(BoardConstructorTest, constructorThrow) {
   EXPECT_THROW(chsmv::Board board{""}, std::domain_error) << "Empty string";
 
   EXPECT_NO_THROW(chsmv::Board board) << "Start board";
