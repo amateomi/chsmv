@@ -1,8 +1,11 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 #include "board.h"
 
-#include <algorithm>
-#include <cctype>
-#include <iostream>
 #include <regex>
 
 namespace chsmv {
@@ -68,7 +71,7 @@ Board::Board(const std::string& fen) {
   }
 }
 
-Board::operator std::string() const noexcept {}
+Board::operator std::string() const noexcept { return {}; }
 
 std::optional<const Piece*> Board::GetPiece(const Square& square) const noexcept {}
 
