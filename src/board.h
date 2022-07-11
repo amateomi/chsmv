@@ -1,6 +1,7 @@
 #ifndef CHSMV_SRC_BOARD_H_
 #define CHSMV_SRC_BOARD_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
@@ -14,7 +15,7 @@ constexpr auto kStartBoard{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -
 
 class Board {
  public:
-  explicit Board(const std::string& board = kStartBoard);
+  explicit Board(const std::string& fen = kStartBoard);
 
   explicit operator std::string() const noexcept;
 
@@ -26,10 +27,11 @@ class Board {
 
  private:
   std::set<std::unique_ptr<Piece>> pieces_;
+  std::array<std::optional<const Piece*>, kSquaresOnBoard> squares_;
 
   Color move_side_;
-  CastlingAbility castling_ability_;
-  Square en_passant_target_;
+  CastlingRights castling_{};
+  std::optional<Square> en_passant_;
 
   int halfmove_clock_;
   int fullmove_counter_;
