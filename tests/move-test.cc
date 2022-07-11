@@ -8,7 +8,7 @@
 
 #include "gtest/gtest.h"
 
-TEST(MoveConstructorTest, constructor) {
+TEST(MoveConstructorTest, constructorThrow) {
   EXPECT_THROW(chsmv::Move move{""}, std::domain_error) << "Empty string";
 
   EXPECT_NO_THROW(chsmv::Move move{"e2e4"}) << "Ordinary move";
@@ -28,25 +28,17 @@ TEST(MoveConstructorTest, constructor) {
 
 class MoveTest : public ::testing::Test {
  public:
-  MoveTest()
-      : queen_{"a1a1q"},
-        rook_{"b2b2r"},
-        bishop_{"c3c3b"},
-        knight_{"d4d4n"},
-        none_{"e5e5"},
-
-        e_2_e_4_{"e2e4"},
-        c_2_c_1_q_{"c2c1q"} {}
+  MoveTest() = default;
 
  protected:
-  chsmv::Move queen_;
-  chsmv::Move rook_;
-  chsmv::Move bishop_;
-  chsmv::Move knight_;
-  chsmv::Move none_;
+  chsmv::Move queen_{"a1a1q"};
+  chsmv::Move rook_{"b2b2r"};
+  chsmv::Move bishop_{"c3c3b"};
+  chsmv::Move knight_{"d4d4n"};
+  chsmv::Move none_{"e5e5"};
 
-  chsmv::Move e_2_e_4_;
-  chsmv::Move c_2_c_1_q_;
+  chsmv::Move e_2_e_4_{"e2e4"};
+  chsmv::Move c_2_c_1_q_{"c2c1q"};
 };
 
 TEST_F(MoveTest, string_cast) {

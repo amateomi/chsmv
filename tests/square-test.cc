@@ -8,7 +8,7 @@
 
 #include "gtest/gtest.h"
 
-TEST(SquareConstructorTest, constructor) {
+TEST(SquareConstructorTest, constructorThrow) {
   EXPECT_THROW(chsmv::Square square{""}, std::domain_error) << "Empty string";
 
   EXPECT_NO_THROW(chsmv::Square square{"a1"}) << "First square on the board";
@@ -25,14 +25,14 @@ TEST(SquareConstructorTest, constructor) {
 
 class SquareTest : public ::testing::Test {
  public:
-  SquareTest() : a_1_{"a1"}, d_1_{"d1"}, a_3_{"a3"}, e_4_{"e4"}, h_8_{"h8"} {}
+  SquareTest() = default;
 
  protected:
-  chsmv::Square a_1_;
-  chsmv::Square d_1_;
-  chsmv::Square a_3_;
-  chsmv::Square e_4_;
-  chsmv::Square h_8_;
+  chsmv::Square a_1_{"a1"};
+  chsmv::Square d_1_{"d1"};
+  chsmv::Square a_3_{"a3"};
+  chsmv::Square e_4_{"e4"};
+  chsmv::Square h_8_{"h8"};
 };
 
 TEST_F(SquareTest, string_cast) {
