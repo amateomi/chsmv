@@ -37,7 +37,7 @@ Move::Move(const std::string& move) try : origin_{move.substr(0U, 2U)}, destinat
   }
 } catch (const std::exception&) {
   throw std::domain_error{'\"' + move + '\"' +
-                          "is invalid move notation\n"
+                          " is invalid move notation\n"
                           "Right notation: <move descriptor> = <from square><to square>[<promoted to>]\n"
                           "Example: e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)"};
 }
