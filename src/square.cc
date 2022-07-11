@@ -23,6 +23,7 @@ Square::Square(const std::string& square) {
 Square::Square(char file, char rank) : Square(std::string{file, rank}) {}
 
 Square::operator std::string() const noexcept { return {GetFileChar(), GetRankChar()}; }
+Square::operator int() const noexcept { return position_; }
 
 int Square::GetFile() const noexcept { return position_ % 8; }
 char Square::GetFileChar() const noexcept { return static_cast<char>(GetFile() + 'a'); }

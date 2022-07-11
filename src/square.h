@@ -18,6 +18,7 @@ class Square {
   Square(char file, char rank);
 
   explicit operator std::string() const noexcept;
+  explicit operator int() const noexcept;
 
   [[nodiscard]] int GetFile() const noexcept;
   [[nodiscard]] char GetFileChar() const noexcept;
