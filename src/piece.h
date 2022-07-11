@@ -25,18 +25,18 @@ class Move;
 
 class Piece {
  public:
-  static std::unique_ptr<Piece> MakePiece(char piece, const Square& position);
-
-  Piece(const Square& position, Color color);
+  Piece(const Square& position, Color color) : position_{position}, color_{color} {};
   virtual ~Piece() = default;
 
-  [[nodiscard]] const Square& GetPosition() const;
-  [[nodiscard]] Color GetColor() const;
+  static std::unique_ptr<Piece> MakePiece(char piece, const Square& position);
 
-  [[nodiscard]] virtual Conditions GetMoveConditions(const Move& move) const = 0;
-  [[nodiscard]] virtual Conditions GetCaptureConditions(const Move& move) const = 0;
+  [[nodiscard]] const Square& GetPosition() const noexcept;
+  [[nodiscard]] Color GetColor() const noexcept;
 
- private:
+  [[nodiscard]] virtual Conditions GetMoveConditions(const Move& move) const noexcept = 0;
+  [[nodiscard]] virtual Conditions GetCaptureConditions(const Move& move) const noexcept = 0;
+
+ protected:
   Square position_;
   chsmv::Color color_;
 };
