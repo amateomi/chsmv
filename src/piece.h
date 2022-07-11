@@ -9,16 +9,17 @@
 namespace chsmv {
 
 enum class Color { WHITE, BLACK };
+enum class CastlingAbility { AVAILABLE, UNAVAILABLE };
 
-struct CastlingAbility {
-  bool white_king_side;
-  bool white_queen_side;
-  bool black_king_side;
-  bool black_queen_side;
+struct CastlingRights {
+  CastlingAbility white_king_side;
+  CastlingAbility white_queen_side;
+  CastlingAbility black_king_side;
+  CastlingAbility black_queen_side;
 };
 
 using EmptySquares = std::vector<Square>;
-using Conditions = std::tuple<EmptySquares, CastlingAbility>;
+using Conditions = std::tuple<EmptySquares, CastlingRights>;
 
 class Move;
 
