@@ -4,15 +4,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "clion-misra-cpp2008-6-4-5"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-6-4-1"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-6-3-1"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-8-0-1"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-5-0-4"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-11-0-1"
-#pragma ide diagnostic ignored "clion-misra-cpp2008-18-4-1"
-
 #include "square.h"
 
 #include "gtest/gtest.h"
@@ -51,5 +42,3 @@ TEST_F(SquareTest, string_cast) {
   EXPECT_EQ(static_cast<std::string>(e_4_), "e4");
   EXPECT_EQ(static_cast<std::string>(h_8_), "h8");
 }
-
-#pragma clang diagnostic pop
