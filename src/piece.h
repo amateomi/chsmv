@@ -7,44 +7,23 @@
 #ifndef CHSMV_SRC_PIECE_H_
 #define CHSMV_SRC_PIECE_H_
 
-#include <memory>
-#include <vector>
-
-#include "square.h"
+#include <variant>
 
 namespace chsmv {
 
-enum class Color { WHITE, BLACK };
-enum class CastlingAbility { AVAILABLE, UNAVAILABLE };
+struct Piece {
+ public:  // Type
+  enum class Color { WHITE, BLACK };
+  enum class Type { KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN };
 
-struct CastlingRights {
-  CastlingAbility white_king_side;
-  CastlingAbility white_queen_side;
-  CastlingAbility black_king_side;
-  CastlingAbility black_queen_side;
-};
+ public:  // Methods
+  [[nodiscard]] static Piece Factory(char piece);
 
-using EmptySquares = std::vector<Square>;
-using Conditions = std::tuple<EmptySquares, CastlingRights>;
+  explicit operator char() const noexcept;
 
-class Move;
-
-class Piece {
- public:
-  Piece(const Square& position, Color color) : position_{position}, color_{color} {};
-  virtual ~Piece() = default;
-
-  static std::unique_ptr<Piece> MakePiece(char piece, const Square& position);
-
-  [[nodiscard]] const Square& GetPosition() const noexcept;
-  [[nodiscard]] Color GetColor() const noexcept;
-
-  [[nodiscard]] virtual Conditions GetMoveConditions(const Move& move) const noexcept = 0;
-  [[nodiscard]] virtual Conditions GetCaptureConditions(const Move& move) const noexcept = 0;
-
- protected:
-  Square position_;
-  chsmv::Color color_;
+ public:  // Fields
+  Color color;
+  Type type;
 };
 
 }  // namespace chsmv
