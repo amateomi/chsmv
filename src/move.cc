@@ -7,68 +7,59 @@
 #include "move.h"
 
 #include <regex>
+#include <sstream>
+#include <stdexcept>
 
 namespace chsmv {
 
-Move::Move(const std::string& move) try : origin_{move.substr(0U, 2U)}, destination_{move.substr(2U, 2U)} {
-  if (!std::regex_match(move, std::regex{"([a-h][1-8]){2}[qrbn]?"})) {
+Move::Move(std::string_view move) try : origin{move.substr(0, 2)}, destination{move.substr(2, 2)} {
+  if (!std::regex_match(std::string{move}, std::regex{"([a-h][1-8]){2}[qrbn]?"})) {
     throw std::exception{};
   }
   switch (move.back()) {
     case 'q':
-      promotion_ = Promotion::TO_QUEEN;
+      this->promotion = Promotion::TO_QUEEN;
       break;
-
     case 'r':
-      promotion_ = Promotion::TO_ROOK;
+      this->promotion = Promotion::TO_ROOK;
       break;
-
     case 'b':
-      promotion_ = Promotion::TO_BISHOP;
+      this->promotion = Promotion::TO_BISHOP;
       break;
-
     case 'n':
-      promotion_ = Promotion::TO_KNIGHT;
+      this->promotion = Promotion::TO_KNIGHT;
       break;
-
     default:
-      promotion_ = Promotion::NONE;
+      this->promotion = Promotion::NONE;
       break;
   }
-} catch (const std::exception&) {
-  throw std::domain_error{'\"' + move + '\"' +
+} catch (const std::exception& e) {
+  throw std::domain_error{'\"' + std::string{move} + '\"' +
                           " is invalid move notation\n"
                           "Right notation: <move descriptor> = <from square><to square>[<promoted to>]\n"
                           "Example: e2e4, e7e5, e1g1 (white short castling), e7e8q (for promotion)"};
 }
 
 Move::operator std::string() const noexcept {
-  auto result{static_cast<std::string>(origin_) + static_cast<std::string>(destination_)};
-  switch (promotion_) {
+  std::ostringstream oss;
+  oss << static_cast<std::string>(origin) << static_cast<std::string>(destination);
+  switch (promotion) {
     case Promotion::TO_QUEEN:
-      result += 'q';
+      oss << 'q';
       break;
-
     case Promotion::TO_ROOK:
-      result += 'r';
+      oss << 'r';
       break;
-
     case Promotion::TO_BISHOP:
-      result += 'b';
+      oss << 'b';
       break;
-
     case Promotion::TO_KNIGHT:
-      result += 'n';
+      oss << 'n';
       break;
-
     case Promotion::NONE:
       break;
   }
-  return result;
+  return oss.str();
 }
-
-const chsmv::Square& chsmv::Move::GetOrigin() const noexcept { return origin_; }
-const chsmv::Square& chsmv::Move::GetDestination() const noexcept { return destination_; }
-const Promotion& chsmv::Move::GetPromotion() const noexcept { return promotion_; }
 
 }  // namespace chsmv
