@@ -47,9 +47,9 @@ TEST_F(MoveTest, string_cast) {
 }
 
 TEST_F(MoveTest, promotion) {
-  EXPECT_EQ(queen_.GetPromotion(), chsmv::Promotion::TO_QUEEN);
-  EXPECT_EQ(rook_.GetPromotion(), chsmv::Promotion::TO_ROOK);
-  EXPECT_EQ(bishop_.GetPromotion(), chsmv::Promotion::TO_BISHOP);
-  EXPECT_EQ(knight_.GetPromotion(), chsmv::Promotion::TO_KNIGHT);
-  EXPECT_EQ(none_.GetPromotion(), chsmv::Promotion::NONE);
+  EXPECT_EQ(queen_.promotion, chsmv::Promotion::TO_QUEEN);
+  EXPECT_EQ(rook_.promotion, chsmv::Promotion::TO_ROOK);
+  EXPECT_EQ(bishop_.promotion, chsmv::Promotion::TO_BISHOP);
+  EXPECT_EQ(knight_.promotion, chsmv::Promotion::TO_KNIGHT);
+  EXPECT_EQ(none_.promotion, chsmv::Promotion::NONE);
 }
