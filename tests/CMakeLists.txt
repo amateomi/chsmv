@@ -11,6 +11,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 include_directories(../src)
+file(GLOB SOURCES *.cc)
 
-add_executable(${PROJECT_NAME} square-test.cc move-test.cc board_test.cc)
+add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} chsmv gtest_main)
