@@ -57,7 +57,8 @@ class BoardTest : public ::testing::Test {
 };
 
 TEST_F(BoardTest, string_cast) {
-  EXPECT_EQ(static_cast<std::string>(board_1_), chsmv::kStartBoard);
+  EXPECT_EQ(static_cast<std::string>(start_board_), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  EXPECT_EQ(static_cast<std::string>(board_1_), "4k3/8/8/8/8/8/4P3/4K3 w - - 5 39");
   EXPECT_EQ(static_cast<std::string>(board_2_), "r2q1rk1/pp2ppbp/2p2np1/6B1/3PP1b1/Q1P2N2/P4PPP/3RKB1R b K - 0 13");
-  EXPECT_EQ(static_cast<std::string>(board_2_), "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
+  EXPECT_EQ(static_cast<std::string>(board_3_), "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
 }
