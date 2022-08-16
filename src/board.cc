@@ -6,26 +6,26 @@
 
 #include "board.h"
 
+#include <numeric>
 #include <regex>
+#include <sstream>
+#include <stdexcept>
 
 namespace chsmv {
 
-Board::Board(const std::string& fen) {
+Board::Board(std::string_view board_in_fen) {
   try {
     std::regex re{"([kqrbnpKQRBNP1-8]{1,8}/){7}[kqrbnpKQRBNP1-8]{1,8} [wb] (-|(K?Q?k?q?)) (-|[a-h][36])( [0-9]*){2}"};
-    if (!std::regex_match(fen, re)) {
+    if (!std::regex_match(std::string{board_in_fen}, re)) {
       throw std::exception{};
     }
-    std::vector<std::string> words;
-    std::istringstream iss{fen};
-    std::string buffer;
-    while (std::getline(iss, buffer, ' ')) {
-      words.push_back(std::move(buffer));
-    }
+    std::istringstream iss{board_in_fen.data()};
 
-    char file{'a'};
-    char rank{'8'};
-    for (auto item : words[0U]) {
+    std::string board;
+    iss >> board;
+    auto file{'a'};
+    auto rank{'8'};
+    for (auto item : board) {
       if (file > 'h' && item != '/') {
         throw std::exception{};
       }
@@ -33,50 +33,90 @@ Board::Board(const std::string& fen) {
         --rank;
         file = 'a';
       } else if (std::isdigit(item)) {
-        file = static_cast<char>(file + (item - '1'));
+        file = static_cast<char>(file + (item - '0'));
       } else {
-        Square square{file, rank};
-        auto new_piece = pieces_.insert(Piece::MakePiece(item, square)).first;
-        squares_[static_cast<int>(square)] = std::make_optional<const Piece*>(new_piece->get());
+        this->board_[Square{file, rank}.index] = Piece::Factory(item);
         ++file;
       }
     }
 
-    move_side_ = words[1U] == "w" ? Color::WHITE : Color::BLACK;
+    std::string turn;
+    iss >> turn;
+    this->move_turn_ = turn == "w" ? MoveTurn::WHITE : MoveTurn::BLACK;
 
-    auto get_availability = [&words](char piece) {
-      return words[2U].find(piece) == std::string::npos ? CastlingAbility::UNAVAILABLE : CastlingAbility::AVAILABLE;
-    };
-    castling_.white_king_side = get_availability('K');
-    castling_.white_queen_side = get_availability('Q');
-    castling_.black_king_side = get_availability('k');
-    castling_.black_queen_side = get_availability('q');
+    std::string castling;
+    iss >> castling;
+    auto get_availability = [&castling](auto piece) -> bool { return castling.find(piece) != std::string::npos; };
+    this->castling_ability_[WHITE][KING] = get_availability('K');
+    this->castling_ability_[WHITE][QUEEN] = get_availability('Q');
+    this->castling_ability_[BLACK][KING] = get_availability('k');
+    this->castling_ability_[BLACK][QUEEN] = get_availability('q');
 
-    en_passant_ = words[3U] == "-" ? std::nullopt : std::make_optional<Square>(words[3U]);
+    std::string en_passant;
+    iss >> en_passant;
+    this->en_passant_square_ = en_passant == "-" ? std::nullopt : std::make_optional<Square>(en_passant);
 
-    halfmove_clock_ = std::stoi(words[4U]);
-    if (halfmove_clock_ > 50) {
+    iss >> this->halfmove_count_ >> this->fullmove_count_;
+    if (this->halfmove_count_ > 50) {
       throw std::exception{};
     }
-
-    fullmove_counter_ = std::stoi(words[5U]);
-
   } catch (const std::exception&) {
-    throw std::domain_error('\"' + fen + '\"' +
+    throw std::domain_error('\"' + std::string{board_in_fen} + '\"' +
                             " is invalid FEN board\n"
                             "Right FEN: <FEN> = <Piece Placement> <Side to move> <Castling ability> <En passant target "
                             "square> <Halfmove clock> <Fullmove counter>\n"
                             "Example: " +
-                            kStartBoard);
+                            start_board_position_in_fen_);
   }
 }
 
-Board::operator std::string() const noexcept { return {}; }
+Board::operator std::string() const noexcept {
+  std::ostringstream oss;
 
-std::optional<const Piece*> Board::GetPiece(const Square& square) const noexcept {}
+  for (auto i{0}; i < size_; ++i) {
+    if (i % 8 == 0 && i != 0) {
+      oss << '/';
+    }
+    if (board_[i].has_value()) {
+      oss << static_cast<char>(board_[i].value());
+    } else {
+      auto empty_squares_count = 1;
+      while (i % 8 != 7) {
+        if (board_[i + 1].has_value()) {
+          break;
+        }
+        ++empty_squares_count;
+        ++i;
+      }
+      oss << empty_squares_count;
+    }
+  }
 
-bool Board::IsMeetCondition(const Conditions& conditions) const noexcept { return false; }
+  oss << ' ' << (move_turn_ == MoveTurn::WHITE ? 'w' : 'b') << ' ';
 
-Board Board::MakeMove(const Move& move) const {}
+  if ((!castling_ability_[WHITE][KING] && !castling_ability_[WHITE][QUEEN]) &&
+      (!castling_ability_[BLACK][KING] && !castling_ability_[BLACK][QUEEN])) {
+    oss << '-';
+  } else {
+    if (castling_ability_[WHITE][KING]) {
+      oss << 'K';
+    }
+    if (castling_ability_[WHITE][QUEEN]) {
+      oss << 'Q';
+    }
+    if (castling_ability_[BLACK][KING]) {
+      oss << 'k';
+    }
+    if (castling_ability_[BLACK][QUEEN]) {
+      oss << 'q';
+    }
+  }
+
+  oss << ' ' << (en_passant_square_.has_value() ? static_cast<std::string>(en_passant_square_.value()) : "-");
+
+  oss << ' ' << halfmove_count_ << ' ' << fullmove_count_;
+
+  return oss.str();
+}
 
 }  // namespace chsmv
