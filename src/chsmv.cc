@@ -6,21 +6,20 @@
 
 #include "chsmv.h"
 
+#include "board.h"
+
 namespace chsmv {
 
-MoveStatus ChessMoveAnalyzer::CheckMove(const BoardString& board, const MoveString& move) const {
-  return MoveStatus::VALID;
+MoveStatus ChessMoveAnalyzer::CheckMove(std::string_view board_in_fen, std::string_view move_in_lan) const {
+  Board board{board_in_fen};
 }
 
-BoardString ChessMoveAnalyzer::MakeMove(const BoardString& board, const MoveString& move, History option) {
+std::string ChessMoveAnalyzer::MakeMove(std::string_view board_in_fen, std::string_view move_in_lan) const {
   return std::string();
 }
 
-BoardState ChessMoveAnalyzer::GetBoardState(const BoardString& board) { return BoardState::WHITE_WIN; }
-
-AvailableMoves ChessMoveAnalyzer::GetAvailableMoves(const BoardString& board, const SquareString& square,
-                                                    Cache option) {
-  return chsmv::AvailableMoves();
+std::vector<bool> ChessMoveAnalyzer::GetAvailableMoves(std::string_view board_in_fen, std::string_view square) const {
+  return std::vector<bool>();
 }
 
 }  // namespace chsmv

@@ -7,38 +7,21 @@
 #ifndef CHSMV_INCLUDE_CHSMV_H_
 #define CHSMV_INCLUDE_CHSMV_H_
 
-#include <map>
-#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace chsmv {
 
-enum class History { ENABLE, DISABLE };
-enum class Cache { ENABLE, DISABLE };
-enum class MoveStatus { VALID, INVALID, MISSING_PAWN_PROMOTION };
-enum class BoardState { OK, DRAW, BLACK_WIN, WHITE_WIN };
-
-using BoardString = std::string;
-using MoveString = std::string;
-using SquareString = std::string;
-using AvailableMoves = std::vector<bool>;
+enum class MoveStatus { VALID, INVALID };
 
 class ChessMoveAnalyzer {
  public:
-  ChessMoveAnalyzer() = default;
+  [[nodiscard]] MoveStatus CheckMove(std::string_view board_in_fen, std::string_view move_in_lan) const;
 
-  [[nodiscard]] MoveStatus CheckMove(const BoardString& board, const MoveString& move) const;
+  [[nodiscard]] std::string MakeMove(std::string_view board_in_fen, std::string_view move_in_lan) const;
 
-  BoardString MakeMove(const BoardString& board, const MoveString& move, History option);
-
-  BoardState GetBoardState(const BoardString& board);
-
-  AvailableMoves GetAvailableMoves(const BoardString& board, const SquareString& square, Cache option);
-
-  private:
-  std::optional<std::vector<MoveString>> move_history_{std::in_place};
-  std::optional<std::map<BoardString, AvailableMoves>> board_moves_cache_{std::in_place};
+  [[nodiscard]] std::vector<bool> GetAvailableMoves(std::string_view board_in_fen, std::string_view square) const;
 };
 
 }  // namespace chsmv
