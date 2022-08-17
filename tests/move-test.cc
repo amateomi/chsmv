@@ -39,6 +39,12 @@ class MoveTest : public ::testing::Test {
 
   chsmv::Move e_2_e_4_{"e2e4"};
   chsmv::Move c_2_c_1_q_{"c2c1q"};
+
+  chsmv::Move file_positive_{"f4e2"};
+  chsmv::Move file_negative_{"a1h8"};
+
+  chsmv::Move rank_positive_{"c2d8"};
+  chsmv::Move rank_negative_{"f3b1"};
 };
 
 TEST_F(MoveTest, string_cast) {
@@ -52,4 +58,11 @@ TEST_F(MoveTest, promotion) {
   EXPECT_EQ(bishop_.promotion, chsmv::Promotion::TO_BISHOP);
   EXPECT_EQ(knight_.promotion, chsmv::Promotion::TO_KNIGHT);
   EXPECT_EQ(none_.promotion, chsmv::Promotion::NONE);
+}
+
+TEST_F(MoveTest, direction) {
+  EXPECT_EQ(file_positive_.FileDirection(), 1);
+  EXPECT_EQ(file_negative_.FileDirection(), -1);
+  EXPECT_EQ(rank_positive_.RankDirection(), 1);
+  EXPECT_EQ(rank_negative_.RankDirection(), -1);
 }

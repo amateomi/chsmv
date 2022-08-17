@@ -62,4 +62,7 @@ Move::operator std::string() const noexcept {
   return oss.str();
 }
 
+int Move::FileDirection() const noexcept { return destination.rank - origin.rank > 0 ? 1 : -1; }
+int Move::RankDirection() const noexcept { return destination.file - origin.file > 0 ? 1 : -1; }
+
 }  // namespace chsmv

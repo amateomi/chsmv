@@ -21,6 +21,9 @@ struct Move {
 
   explicit operator std::string() const noexcept;
 
+  [[nodiscard]] int FileDirection() const noexcept;
+  [[nodiscard]] int RankDirection() const noexcept;
+
   Square origin;
   Square destination;
   Promotion promotion;
