@@ -7,14 +7,16 @@
 #include "chsmv.h"
 
 #include "board.h"
+#include "engine.h"
+#include "move.h"
 
 namespace chsmv {
 
-MoveStatus ChessMoveAnalyzer::CheckMove(std::string_view board_in_fen, std::string_view move_in_lan) const {
-  Board board{board_in_fen};
+MoveDescription ChessMoveAnalyzer::CheckMove(std::string_view board_in_fen, std::string_view move_in_lan) const {
+  return Engine::IsPossibleMove(Board{board_in_fen}, Move{move_in_lan});
 }
 
-std::string ChessMoveAnalyzer::MakeMove(std::string_view board_in_fen, std::string_view move_in_lan) const {
+std::string ChessMoveAnalyzer::MakeMove(std::string_view board_in_fen, std::string_view move_in_lan) {
   return std::string();
 }
 
