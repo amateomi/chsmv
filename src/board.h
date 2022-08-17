@@ -18,23 +18,38 @@
 
 namespace chsmv {
 
-class Board {
- public:  // Types
-  enum MoveTurn { WHITE, BLACK };
-  enum CastlingSide { KING, QUEEN };
+struct Board {
+  // Types
+  using OptionalPiece = std::optional<Piece>;
+  enum class CastlingSide : int { KING, QUEEN };
+  using CastlingOption = std::pair<Piece::Color, CastlingSide>;
 
- public:  // Methods
-  explicit Board(std::string_view board_in_fen = start_board_position_in_fen_);
+  // Constructor
+  explicit Board(std::string_view board_in_fen = start_board_position_in_fen);
 
+  // Operators
   explicit operator std::string() const noexcept;
 
- private:  // Constants
-  static constexpr auto file_size_{8};
-  static constexpr auto rank_size_{8};
-  static constexpr auto size_{file_size_ * rank_size_};
-  static constexpr auto start_board_position_in_fen_{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+  OptionalPiece& operator[](const Square& square) noexcept;
+  const OptionalPiece& operator[](const Square& square) const noexcept;
 
- private:  // Fields
+  bool& operator[](CastlingOption option) noexcept;
+  const bool& operator[](CastlingOption option) const noexcept;
+
+  // Constants
+  static constexpr auto file_size{8};
+  static constexpr auto rank_size{8};
+  static constexpr auto size{file_size * rank_size};
+  static constexpr auto start_board_position_in_fen{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+
+  // Data
+ public:
+  Piece::Color move_turn;
+  std::optional<Square> en_passant_square;
+  int halfmove_count{};
+  int fullmove_count{};
+
+ private:
   /**
    * @note Indexing starts from a8 to h1:\n
    *     a  b  c  d  e  f  g  h \n
@@ -47,12 +62,8 @@ class Board {
    * 2 |..|..|..|..|..|..|..|..|\n
    * 1 |..|..|..|..|..|..|..|63|\n
    */
-  std::array<std::optional<Piece>, size_> board_;
-  MoveTurn move_turn_;
-  std::array<std::array<bool, 2>, 2> castling_ability_{};
-  std::optional<Square> en_passant_square_;
-  int halfmove_count_{};
-  int fullmove_count_{};
+  std::array<OptionalPiece, size> board;
+  std::array<std::array<bool, 2>, 2> castling_ability{};
 };
 
 }  // namespace chsmv
