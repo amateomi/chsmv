@@ -24,7 +24,7 @@ Square::Square(std::string_view square) {
 }
 
 Square::Square(char file, char rank) {
-  if (file < 'a' || file > 'h' || rank < '1' || rank > '8') {
+  if (file < 'a' || 'h' < file || rank < '1' || '8' < rank) {
     throw std::domain_error{'\"' + std::string{file, rank} + '\"' +
                             " is invalid square notation\n"
                             "Right notation: <square> = <file letter><rank number>\n"
@@ -34,7 +34,22 @@ Square::Square(char file, char rank) {
   this->rank = 7 - (rank - '1');
   this->index = this->file + this->rank * 8;
 }
+Square::Square(int file, int rank) {
+  if (file < 0 || 7 < file || rank < 0 || 7 < rank) {
+    throw std::domain_error{"file: " + std::to_string(file) + " rank: " + std::to_string(rank) +
+                            " is invalid pair of values\n"
+                            "File and rank must be in the interval between 0 and 7 inclusive"};
+  }
+  this->file = file;
+  this->rank = rank;
+  this->index = file + rank * 8;
+}
 
-Square::operator std::string() const noexcept { return {static_cast<char>(file + 'a'), static_cast<char>(7 - (rank - '1'))}; }
+Square::operator std::string() const noexcept {
+  return {static_cast<char>(file + 'a'), static_cast<char>(7 - (rank - '1'))};
+}
+
+bool operator==(const Square& lhs, const Square& rhs) { return lhs.index == rhs.index; }
+bool operator!=(const Square& lhs, const Square& rhs) { return !(rhs == lhs); }
 
 }  // namespace chsmv

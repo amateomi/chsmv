@@ -42,3 +42,8 @@ TEST_F(SquareTest, string_cast) {
   EXPECT_EQ(static_cast<std::string>(e_4_), "e4");
   EXPECT_EQ(static_cast<std::string>(h_8_), "h8");
 }
+
+TEST_F(SquareTest, equality) {
+  EXPECT_EQ(a_1_, a_1_);
+  EXPECT_NE(a_1_, a_3_);
+}
