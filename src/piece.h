@@ -13,7 +13,7 @@ namespace chsmv {
 
 struct Piece {
  public:  // Type
-  enum class Color { WHITE, BLACK };
+  enum class Color : int { WHITE, BLACK };
   enum class Type { KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN };
 
  public:  // Methods
