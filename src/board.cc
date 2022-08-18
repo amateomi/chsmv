@@ -6,6 +6,7 @@
 
 #include "board.h"
 
+#include <cassert>
 #include <numeric>
 #include <regex>
 #include <sstream>
@@ -21,11 +22,11 @@ Board::Board(std::string_view board_in_fen) {
     }
     std::istringstream iss{board_in_fen.data()};
 
-    std::string squares;
-    iss >> squares;
+    std::string pieces;
+    iss >> pieces;
     auto file{'a'};
     auto rank{'8'};
-    for (auto item : squares) {
+    for (auto item : pieces) {
       if (file > 'h' && item != '/') {
         throw std::exception{};
       }
@@ -35,7 +36,7 @@ Board::Board(std::string_view board_in_fen) {
       } else if (std::isdigit(item)) {
         file = static_cast<char>(file + (item - '0'));
       } else {
-        this->operator[](Square{file, rank}) = Piece::Factory(item);
+        this->squares[Square::ToIndex(file, rank)] = Piece::Factory(item);
         ++file;
       }
     }
@@ -46,13 +47,9 @@ Board::Board(std::string_view board_in_fen) {
 
     std::string castling;
     iss >> castling;
-    auto set_castling = [this, &castling](Piece::Color color, CastlingSide side, char piece) {
-      this->operator[](std::pair{color, side}) = castling.find(piece) != std::string::npos;
-    };
-    set_castling(Piece::Color::WHITE, CastlingSide::KING, 'K');
-    set_castling(Piece::Color::WHITE, CastlingSide::QUEEN, 'Q');
-    set_castling(Piece::Color::BLACK, CastlingSide::KING, 'k');
-    set_castling(Piece::Color::BLACK, CastlingSide::QUEEN, 'q');
+    for (auto i{0}; i < this->castling_ability.size(); ++i) {
+      this->castling_ability[i] = castling.find(castling_chars_in_fen[i]) != std::string::npos;
+    }
 
     std::string en_passant;
     iss >> en_passant;
@@ -75,16 +72,16 @@ Board::Board(std::string_view board_in_fen) {
 Board::operator std::string() const noexcept {
   std::ostringstream oss;
 
-  for (auto i{0}; i < size; ++i) {
+  for (auto i{0}; i < squares.size(); ++i) {
     if (i % 8 == 0 && i != 0) {
       oss << '/';
     }
-    if (board[i].has_value()) {
-      oss << static_cast<char>(board[i].value());
+    if (squares[i].has_value()) {
+      oss << static_cast<char>(squares[i].value());
     } else {
       auto empty_squares_count{1};
       while (i % 8 != 7) {
-        if (board[i + 1].has_value()) {
+        if (squares[i + 1].has_value()) {
           break;
         }
         ++empty_squares_count;
@@ -96,19 +93,14 @@ Board::operator std::string() const noexcept {
 
   oss << ' ' << (move_turn == Piece::Color::WHITE ? 'w' : 'b') << ' ';
 
-  bool castling = false;
-  auto print_castling = [this, &oss, &castling](Piece::Color color, CastlingSide side, char piece) {
-    if (this->operator[](std::pair{color, side})) {
-      oss << piece;
-      castling = true;
-    }
-  };
-  print_castling(Piece::Color::WHITE, CastlingSide::KING, 'K');
-  print_castling(Piece::Color::WHITE, CastlingSide::QUEEN, 'Q');
-  print_castling(Piece::Color::BLACK, CastlingSide::KING, 'k');
-  print_castling(Piece::Color::BLACK, CastlingSide::QUEEN, 'q');
-  if (!castling) {
+  if (std::find(castling_ability.begin(), castling_ability.end(), true) == castling_ability.end()) {
     oss << '-';
+  } else {
+    for (auto i{0}; i < this->castling_ability.size(); ++i) {
+      if (castling_ability[i]) {
+        oss << castling_chars_in_fen[i];
+      }
+    }
   }
 
   oss << ' ' << (en_passant_square.has_value() ? static_cast<std::string>(en_passant_square.value()) : "-");
@@ -118,14 +110,22 @@ Board::operator std::string() const noexcept {
   return oss.str();
 }
 
-Board::OptionalPiece& Board::operator[](const Square& square) noexcept { return board[square.index]; }
-const Board::OptionalPiece& Board::operator[](const Square& square) const noexcept { return board[square.index]; }
-
-bool& Board::operator[](Board::CastlingOption option) noexcept {
-  return castling_ability[static_cast<int>(option.first)][static_cast<int>(option.second)];
+Board::OptionalPiece& Board::operator[](int index) noexcept {
+  assert(0 <= index && index < squares.size());
+  return squares[index];
 }
-const bool& Board::operator[](Board::CastlingOption option) const noexcept {
-  return castling_ability[static_cast<int>(option.first)][static_cast<int>(option.second)];
+const Board::OptionalPiece& Board::operator[](int index) const noexcept {
+  assert(0 <= index && index < squares.size());
+  return squares[index];
+}
+Board::OptionalPiece& Board::operator[](const Square& square) noexcept { return squares[square.index]; }
+const Board::OptionalPiece& Board::operator[](const Square& square) const noexcept { return squares[square.index]; }
+
+bool& Board::GetCastling(Piece::Color color, Board::CastlingSide side) noexcept {
+  return castling_ability[(color == Piece::Color::WHITE ? 0 : 2) + (side == CastlingSide::KING ? 0 : 1)];
+}
+const bool& Board::GetCastling(Piece::Color color, Board::CastlingSide side) const noexcept {
+  return castling_ability[(color == Piece::Color::WHITE ? 0 : 2) + (side == CastlingSide::KING ? 0 : 1)];
 }
 
 }  // namespace chsmv

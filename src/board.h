@@ -19,28 +19,31 @@
 namespace chsmv {
 
 struct Board {
-  // Types
-  using OptionalPiece = std::optional<Piece>;
-  enum class CastlingSide : int { KING, QUEEN };
-  using CastlingOption = std::pair<Piece::Color, CastlingSide>;
-
-  // Constructor
-  explicit Board(std::string_view board_in_fen = start_board_position_in_fen);
-
-  // Operators
-  explicit operator std::string() const noexcept;
-
-  OptionalPiece& operator[](const Square& square) noexcept;
-  const OptionalPiece& operator[](const Square& square) const noexcept;
-
-  bool& operator[](CastlingOption option) noexcept;
-  const bool& operator[](CastlingOption option) const noexcept;
-
   // Constants
   static constexpr auto file_size{8};
   static constexpr auto rank_size{8};
   static constexpr auto size{file_size * rank_size};
   static constexpr auto start_board_position_in_fen{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+  static constexpr std::string_view castling_chars_in_fen{"KQkq"};
+
+  // Types
+  using OptionalPiece = std::optional<Piece>;
+  enum class CastlingSide : int { KING, QUEEN };
+
+  // Constructors
+  explicit Board(std::string_view board_in_fen = start_board_position_in_fen);
+
+  // Operators
+  explicit operator std::string() const noexcept;
+
+  OptionalPiece& operator[](int index) noexcept;
+  const OptionalPiece& operator[](int index) const noexcept;
+  OptionalPiece& operator[](const Square& square) noexcept;
+  const OptionalPiece& operator[](const Square& square) const noexcept;
+
+  // Functions
+  bool& GetCastling(Piece::Color color, CastlingSide side) noexcept;
+  [[nodiscard]] const bool& GetCastling(Piece::Color color, CastlingSide side) const noexcept;
 
   // Data
  public:
@@ -62,8 +65,8 @@ struct Board {
    * 2 |..|..|..|..|..|..|..|..|\n
    * 1 |..|..|..|..|..|..|..|63|\n
    */
-  std::array<OptionalPiece, size> board;
-  std::array<std::array<bool, 2>, 2> castling_ability{};
+  std::array<OptionalPiece, size> squares;
+  std::array<bool, 4> castling_ability{};
 };
 
 }  // namespace chsmv
