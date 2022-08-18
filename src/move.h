@@ -14,16 +14,21 @@
 
 namespace chsmv {
 
-enum class Promotion { TO_QUEEN, TO_ROOK, TO_BISHOP, TO_KNIGHT, NONE };
-
 struct Move {
+  // Types
+  enum class Promotion { TO_QUEEN, TO_ROOK, TO_BISHOP, TO_KNIGHT, NONE };
+
+  // Constructors
   explicit Move(std::string_view move);
 
+  // Operators
   explicit operator std::string() const noexcept;
 
+  // Functions
   [[nodiscard]] int FileDirection() const noexcept;
   [[nodiscard]] int RankDirection() const noexcept;
 
+  // Data
   Square origin;
   Square destination;
   Promotion promotion;

@@ -53,11 +53,11 @@ TEST_F(MoveTest, string_cast) {
 }
 
 TEST_F(MoveTest, promotion) {
-  EXPECT_EQ(queen_.promotion, chsmv::Promotion::TO_QUEEN);
-  EXPECT_EQ(rook_.promotion, chsmv::Promotion::TO_ROOK);
-  EXPECT_EQ(bishop_.promotion, chsmv::Promotion::TO_BISHOP);
-  EXPECT_EQ(knight_.promotion, chsmv::Promotion::TO_KNIGHT);
-  EXPECT_EQ(none_.promotion, chsmv::Promotion::NONE);
+  EXPECT_EQ(queen_.promotion, chsmv::Move::Promotion::TO_QUEEN);
+  EXPECT_EQ(rook_.promotion, chsmv::Move::Promotion::TO_ROOK);
+  EXPECT_EQ(bishop_.promotion, chsmv::Move::Promotion::TO_BISHOP);
+  EXPECT_EQ(knight_.promotion, chsmv::Move::Promotion::TO_KNIGHT);
+  EXPECT_EQ(none_.promotion, chsmv::Move::Promotion::NONE);
 }
 
 TEST_F(MoveTest, direction) {
