@@ -14,15 +14,17 @@
 
 namespace chsmv {
 
-enum class MoveDescription { POSSIBLE_MOVE, IMPOSSIBLE_MOVE, PAWN_PROMOTION_NOT_SPECIFIED };
+enum class MoveDescription { LEGAL, ILLEGAL, PAWN_PROMOTION_NOT_SPECIFIED };
+enum class BoardDescription { NOTHING_SPECIAL, CHECK, CHECKMATE, DRAW };
 
 class ChessMoveAnalyzer {
  public:
   [[nodiscard]] MoveDescription CheckMove(std::string_view board_in_fen, std::string_view move_in_lan) const;
 
-  [[nodiscard]] std::string MakeMove(std::string_view board_in_fen, std::string_view move_in_lan);
+  [[nodiscard]] std::pair<BoardDescription, std::string> MakeMove(std::string_view board_in_fen,
+                                                                  std::string_view move_in_lan);
 
-  [[nodiscard]] std::vector<bool> GetAvailableMoves(std::string_view board_in_fen, std::string_view square) const;
+  [[nodiscard]] std::vector<bool> GetLegalMoves(std::string_view board_in_fen, std::string_view origin) const;
 
  private:
   std::list<std::string> move_history_;
