@@ -25,8 +25,11 @@ struct Move {
   explicit operator std::string() const noexcept;
 
   // Functions
-  [[nodiscard]] int FileDirection() const noexcept;
-  [[nodiscard]] int RankDirection() const noexcept;
+  [[nodiscard]] int FileDistance() const noexcept;
+  [[nodiscard]] int RankDistance() const noexcept;
+
+  [[nodiscard]] int FileDirection() const noexcept;  //!< Return 1 if move direction is from file a to h, otherwise -1
+  [[nodiscard]] int RankDirection() const noexcept;  //!< Return 1 if move direction is from rank 8 to 1, otherwise -1
 
   // Data
   Square origin;

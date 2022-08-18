@@ -6,6 +6,7 @@
 
 #include "move.h"
 
+#include <cstdlib>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -62,7 +63,10 @@ Move::operator std::string() const noexcept {
   return oss.str();
 }
 
-int Move::FileDirection() const noexcept { return destination.rank - origin.rank > 0 ? 1 : -1; }
-int Move::RankDirection() const noexcept { return destination.file - origin.file > 0 ? 1 : -1; }
+int Move::FileDistance() const noexcept { return abs(destination.file - origin.file); }
+int Move::RankDistance() const noexcept { return abs(destination.rank - origin.rank); }
+
+int Move::RankDirection() const noexcept { return destination.rank - origin.rank > 0 ? 1 : -1; }
+int Move::FileDirection() const noexcept { return destination.file - origin.file > 0 ? 1 : -1; }
 
 }  // namespace chsmv

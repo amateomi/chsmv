@@ -61,8 +61,8 @@ TEST_F(MoveTest, promotion) {
 }
 
 TEST_F(MoveTest, direction) {
-  EXPECT_EQ(file_positive_.FileDirection(), 1);
-  EXPECT_EQ(file_negative_.FileDirection(), -1);
-  EXPECT_EQ(rank_positive_.RankDirection(), 1);
-  EXPECT_EQ(rank_negative_.RankDirection(), -1);
+  EXPECT_EQ(file_positive_.RankDirection(), 1);
+  EXPECT_EQ(file_negative_.RankDirection(), -1);
+  EXPECT_EQ(rank_positive_.FileDirection(), 1);
+  EXPECT_EQ(rank_negative_.FileDirection(), -1);
 }
