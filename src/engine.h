@@ -9,24 +9,40 @@
 
 #include <chsmv.h>
 
+#include <vector>
+
 #include "board.h"
 #include "move.h"
+#include "piece.h"
+#include "square.h"
 
 namespace chsmv {
 
 class Engine {
  public:
+  // Constructors
   Engine() = delete;
 
-  static MoveDescription IsPossibleMove(const Board& board, const Move& move) noexcept;
+  // Functions
+  static MoveDescription IsLegalMove(const Board& board, const Move& move) noexcept;
+  static std::pair<BoardDescription, std::string> ProcessMove(const Board& board, const Move& move) noexcept;
+  static std::vector<bool> GetAllLegalMoves(const Board& board, const Square& origin) noexcept;
 
  private:
-  static bool IsValidKingMove(const Board& board, const Move& move) noexcept;
-  static bool IsValidQueenMove(const Board& board, const Move& move) noexcept;
-  static bool IsValidRookMove(const Board& board, const Move& move) noexcept;
-  static bool IsValidBishopMove(const Board& board, const Move& move) noexcept;
-  static bool IsValidKnightMove(const Board& board, const Move& move) noexcept;
-  static bool IsValidPawnMove(const Board& board, const Move& move) noexcept;
+  static bool IsSameColor(Piece first, Board::OptionalPiece second) noexcept;
+
+  static bool IsKingMove(const Board& board, const Move& move) noexcept;
+  static bool IsCastling(const Board& board, const Move& move) noexcept;
+
+  static bool IsQueenMove(const Board& board, const Move& move) noexcept;
+  static bool IsRookMove(const Board& board, const Move& move) noexcept;
+  static bool IsBishopMove(const Board& board, const Move& move) noexcept;
+  static bool IsKnightMove(const Board& board, const Move& move) noexcept;
+
+  static bool IsPawnMove(const Board& board, const Move& move) noexcept;
+  static bool IsValidPawnMoveDirection(const Board& board, const Move& move) noexcept;
+  static bool IsPawnPromotion(const Board& board, const Move& move) noexcept;
+  static bool IsEnPassant(const Board& board, const Move& move) noexcept;
 };
 
 }  // namespace chsmv
