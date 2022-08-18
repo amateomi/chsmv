@@ -6,6 +6,7 @@
 
 #include "square.h"
 
+#include <cassert>
 #include <regex>
 #include <stdexcept>
 
@@ -18,38 +19,35 @@ Square::Square(std::string_view square) {
                             "Right notation: <square> = <file letter><rank number>\n"
                             "Example: a1, e4, h8"};
   }
-  this->file = square.front() - 'a';
-  this->rank = 7 - (square.back() - '1');
-  this->index = this->file + this->rank * 8;
+  this->file = CharFileToInt(square.front());
+  this->rank = CharRankToInt(square.back());
+  this->index = ToIndex(this->file, this->rank);
 }
 
-Square::Square(char file, char rank) {
-  if (file < 'a' || 'h' < file || rank < '1' || '8' < rank) {
-    throw std::domain_error{'\"' + std::string{file, rank} + '\"' +
-                            " is invalid square notation\n"
-                            "Right notation: <square> = <file letter><rank number>\n"
-                            "Example: a1, e4, h8"};
-  }
-  this->file = file - 'a';
-  this->rank = 7 - (rank - '1');
-  this->index = this->file + this->rank * 8;
-}
-Square::Square(int file, int rank) {
-  if (file < 0 || 7 < file || rank < 0 || 7 < rank) {
-    throw std::domain_error{"file: " + std::to_string(file) + " rank: " + std::to_string(rank) +
-                            " is invalid pair of values\n"
-                            "File and rank must be in the interval between 0 and 7 inclusive"};
-  }
-  this->file = file;
-  this->rank = rank;
-  this->index = file + rank * 8;
-}
+Square::Square(char file, char rank)
+    : file{CharFileToInt(file)}, rank{CharRankToInt(rank)}, index{ToIndex(file, rank)} {}
+
+Square::Square(int file, int rank) : file{file}, rank{rank}, index{ToIndex(file, rank)} {}
 
 Square::operator std::string() const noexcept {
-  return {static_cast<char>(file + 'a'), static_cast<char>(7 - (rank - '1'))};
+  return {static_cast<char>(file + 'a'), static_cast<char>(7 - rank + '1')};
 }
 
-bool operator==(const Square& lhs, const Square& rhs) { return lhs.index == rhs.index; }
-bool operator!=(const Square& lhs, const Square& rhs) { return !(rhs == lhs); }
+bool Square::operator==(const Square& rhs) const noexcept { return this->index == rhs.index; }
+bool Square::operator!=(const Square& rhs) const noexcept { return !(*this == rhs); }
+
+int Square::CharFileToInt(char file) noexcept {
+  assert('a' <= file && file <= 'h');
+  return file - 'a';
+}
+int Square::CharRankToInt(char rank) noexcept {
+  assert('1' <= rank && rank <= '8');
+  return 7 - (rank - '1');
+}
+int Square::ToIndex(int file, int rank) noexcept {
+  assert(0 <= file && file <= 7 && 0 <= rank && rank <= 7);
+  return file + rank * 8;
+}
+int Square::ToIndex(char file, char rank) noexcept { return ToIndex(CharFileToInt(file), CharRankToInt(rank)); }
 
 }  // namespace chsmv

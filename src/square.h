@@ -13,19 +13,28 @@
 namespace chsmv {
 
 struct Square {
+  // Constructors
   explicit Square(std::string_view square);
   Square(char file, char rank);
   Square(int file, int rank);
 
+  // Operators
   explicit operator std::string() const noexcept;
 
-  int index;  //!< @note Indexing starts from a8 to h1
+  bool operator==(const Square& rhs) const noexcept;
+  bool operator!=(const Square& rhs) const noexcept;
+
+  // Functions
+  static int CharFileToInt(char file) noexcept;
+  static int CharRankToInt(char rank) noexcept;
+  static int ToIndex(int file, int rank) noexcept;
+  static int ToIndex(char file, char rank) noexcept;
+
+  // Fields
   int file;
   int rank;
+  int index;  //!< @note Indexing starts from a8 to h1
 };
-
-bool operator==(const Square& lhs, const Square& rhs);
-bool operator!=(const Square& lhs, const Square& rhs);
 
 }  // namespace chsmv
 
