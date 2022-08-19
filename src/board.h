@@ -18,20 +18,18 @@
 
 namespace chsmv {
 
-struct Board {
+class Board {
+ public:
   // Constants
-  static constexpr auto file_size{8};
-  static constexpr auto rank_size{8};
-  static constexpr auto size{file_size * rank_size};
-  static constexpr auto start_board_position_in_fen{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
-  static constexpr std::string_view castling_chars_in_fen{"KQkq"};
+  static constexpr auto start_board_position_in_fen_{"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"};
+  static constexpr std::string_view castling_chars_in_fen_{"KQkq"};
 
   // Types
   using OptionalPiece = std::optional<Piece>;
   enum class CastlingSide : int { KING, QUEEN };
 
   // Constructors
-  explicit Board(std::string_view board_in_fen = start_board_position_in_fen);
+  explicit Board(std::string_view board_in_fen = start_board_position_in_fen_);
 
   // Operators
   explicit operator std::string() const noexcept;
@@ -42,17 +40,19 @@ struct Board {
   const OptionalPiece& operator[](const Square& square) const noexcept;
 
   // Functions
-  bool& GetCastling(Piece::Color color, CastlingSide side) noexcept;
-  [[nodiscard]] const bool& GetCastling(Piece::Color color, CastlingSide side) const noexcept;
+  [[nodiscard]] Piece::Color GetMoveTurn() const noexcept;
 
-  // Data
- public:
-  Piece::Color move_turn;
-  std::optional<Square> en_passant_square;
-  int halfmove_count{};
-  int fullmove_count{};
+  [[nodiscard]] const std::optional<Square>& GetEnPassantSquare() const noexcept;
+
+  bool& Castling(Piece::Color color, CastlingSide side) noexcept;
+  [[nodiscard]] const bool& Castling(Piece::Color color, CastlingSide side) const noexcept;
 
  private:
+  // Data
+  Piece::Color move_turn_;
+  std::optional<Square> en_passant_square_;
+  int halfmove_count_{};
+  int fullmove_count_{};
   /**
    * @note Indexing starts from a8 to h1:\n
    *     a  b  c  d  e  f  g  h \n
@@ -65,8 +65,8 @@ struct Board {
    * 2 |..|..|..|..|..|..|..|..|\n
    * 1 |..|..|..|..|..|..|..|63|\n
    */
-  std::array<OptionalPiece, size> squares;
-  std::array<bool, 4> castling_ability{};
+  std::array<OptionalPiece, Square::total_squares_> squares_;
+  std::array<bool, 4> castling_ability_{};
 };
 
 }  // namespace chsmv
