@@ -13,25 +13,25 @@
 
 namespace chsmv {
 
-Move::Move(std::string_view move) try : origin{move.substr(0, 2)}, destination{move.substr(2, 2)} {
+Move::Move(std::string_view move) try : origin_{move.substr(0, 2)}, destination_{move.substr(2, 2)} {
   if (!std::regex_match(std::string{move}, std::regex{"([a-h][1-8]){2}[qrbn]?"})) {
     throw std::exception{};
   }
   switch (move.back()) {
     case 'q':
-      this->promotion = Promotion::TO_QUEEN;
+      this->promotion_ = Promotion::TO_QUEEN;
       break;
     case 'r':
-      this->promotion = Promotion::TO_ROOK;
+      this->promotion_ = Promotion::TO_ROOK;
       break;
     case 'b':
-      this->promotion = Promotion::TO_BISHOP;
+      this->promotion_ = Promotion::TO_BISHOP;
       break;
     case 'n':
-      this->promotion = Promotion::TO_KNIGHT;
+      this->promotion_ = Promotion::TO_KNIGHT;
       break;
     default:
-      this->promotion = Promotion::NONE;
+      this->promotion_ = Promotion::NONE;
       break;
   }
 } catch (const std::exception& e) {
@@ -43,8 +43,8 @@ Move::Move(std::string_view move) try : origin{move.substr(0, 2)}, destination{m
 
 Move::operator std::string() const noexcept {
   std::ostringstream oss;
-  oss << static_cast<std::string>(origin) << static_cast<std::string>(destination);
-  switch (promotion) {
+  oss << static_cast<std::string>(origin_) << static_cast<std::string>(destination_);
+  switch (promotion_) {
     case Promotion::TO_QUEEN:
       oss << 'q';
       break;
@@ -63,10 +63,17 @@ Move::operator std::string() const noexcept {
   return oss.str();
 }
 
-int Move::FileDistance() const noexcept { return abs(destination.file - origin.file); }
-int Move::RankDistance() const noexcept { return abs(destination.rank - origin.rank); }
+int Move::FileDistance() const noexcept { return abs(destination_.GetFile() - origin_.GetFile()); }
+int Move::RankDistance() const noexcept { return abs(destination_.GetRank() - origin_.GetRank()); }
 
-int Move::RankDirection() const noexcept { return destination.rank - origin.rank > 0 ? 1 : -1; }
-int Move::FileDirection() const noexcept { return destination.file - origin.file > 0 ? 1 : -1; }
+int Move::RankDirection() const noexcept { return destination_.GetRank() - origin_.GetRank() > 0 ? 1 : -1; }
+int Move::FileDirection() const noexcept { return destination_.GetFile() - origin_.GetFile() > 0 ? 1 : -1; }
+
+const Square& Move::Origin() const noexcept { return origin_; }
+Square& Move::Origin() noexcept { return origin_; }
+const Square& Move::Destination() const noexcept { return destination_; }
+Square& Move::Destination() noexcept { return destination_; }
+
+Move::Promotion Move::GetPromotion() const noexcept { return promotion_; }
 
 }  // namespace chsmv
