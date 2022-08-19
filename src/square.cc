@@ -19,35 +19,44 @@ Square::Square(std::string_view square) {
                             "Right notation: <square> = <file letter><rank number>\n"
                             "Example: a1, e4, h8"};
   }
-  this->file = CharFileToInt(square.front());
-  this->rank = CharRankToInt(square.back());
-  this->index = ToIndex(this->file, this->rank);
+  file_ = square.front() - 'a';
+  rank_ = total_ranks_ - 1 - (square.back() - '1');
 }
 
-Square::Square(char file, char rank)
-    : file{CharFileToInt(file)}, rank{CharRankToInt(rank)}, index{ToIndex(file, rank)} {}
-
-Square::Square(int file, int rank) : file{file}, rank{rank}, index{ToIndex(file, rank)} {}
+Square::Square(int file, int rank) : file_{file}, rank_{rank} {}
 
 Square::operator std::string() const noexcept {
-  return {static_cast<char>(file + 'a'), static_cast<char>(7 - rank + '1')};
+  return {static_cast<char>(GetFile() + 'a'), static_cast<char>(total_ranks_ - 1 - GetRank() + '1')};
 }
 
-bool Square::operator==(const Square& rhs) const noexcept { return this->index == rhs.index; }
+bool Square::operator==(const Square& rhs) const noexcept {
+  return this->file_ == rhs.file_ && this->rank_ == rhs.rank_;
+}
 bool Square::operator!=(const Square& rhs) const noexcept { return !(*this == rhs); }
 
-int Square::CharFileToInt(char file) noexcept {
-  assert('a' <= file && file <= 'h');
-  return file - 'a';
+void Square::operator++() noexcept {
+  if (file_ == total_files_ - 1) {
+    if (rank_ == total_ranks_ - 1) {
+      return;
+    }
+    file_ = 0;
+    ++rank_;
+  } else {
+    ++file_;
+  }
 }
-int Square::CharRankToInt(char rank) noexcept {
-  assert('1' <= rank && rank <= '8');
-  return 7 - (rank - '1');
+
+int Square::GetFile() const noexcept { return file_; }
+int Square::GetRank() const noexcept { return rank_; }
+int Square::GetIndex() const noexcept { return file_ + rank_ * 8; }
+
+void Square::SetFile(int file) noexcept {
+  assert(0 <= file && file < total_files_);
+  file_ = file;
 }
-int Square::ToIndex(int file, int rank) noexcept {
-  assert(0 <= file && file <= 7 && 0 <= rank && rank <= 7);
-  return file + rank * 8;
+void Square::SetRank(int rank) noexcept {
+  assert(0 <= rank && rank < total_ranks_);
+  rank_ = rank;
 }
-int Square::ToIndex(char file, char rank) noexcept { return ToIndex(CharFileToInt(file), CharRankToInt(rank)); }
 
 }  // namespace chsmv
