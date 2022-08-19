@@ -19,19 +19,19 @@ Move::Move(std::string_view move) try : origin_{move.substr(0, 2)}, destination_
   }
   switch (move.back()) {
     case 'q':
-      this->promotion_ = Promotion::TO_QUEEN;
+      promotion_ = Promotion::TO_QUEEN;
       break;
     case 'r':
-      this->promotion_ = Promotion::TO_ROOK;
+      promotion_ = Promotion::TO_ROOK;
       break;
     case 'b':
-      this->promotion_ = Promotion::TO_BISHOP;
+      promotion_ = Promotion::TO_BISHOP;
       break;
     case 'n':
-      this->promotion_ = Promotion::TO_KNIGHT;
+      promotion_ = Promotion::TO_KNIGHT;
       break;
     default:
-      this->promotion_ = Promotion::NONE;
+      promotion_ = Promotion::NONE;
       break;
   }
 } catch (const std::exception& e) {
