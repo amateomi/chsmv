@@ -7,21 +7,19 @@
 #ifndef CHSMV_SRC_PIECE_H_
 #define CHSMV_SRC_PIECE_H_
 
-#include <variant>
-
 namespace chsmv {
 
 struct Piece {
- public:  // Type
+  // Type
   enum class Color : int { WHITE, BLACK };
   enum class Type { KING, QUEEN, ROOK, BISHOP, KNIGHT, PAWN };
 
- public:  // Methods
+  // Methods
   [[nodiscard]] static Piece Factory(char piece);
 
   explicit operator char() const noexcept;
 
- public:  // Fields
+  // Fields
   Color color;
   Type type;
 };
