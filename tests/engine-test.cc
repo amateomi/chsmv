@@ -161,6 +161,43 @@ TEST(LegalMovesTest, BishopLegalMove) {
   }
 }
 
+TEST(LegalMoveTest, KnightLegalMove) {
+  // White
+  {
+    Board board{"5b2/P1pp1p2/1N5P/1PpR4/2p3p1/1P2k3/6n1/2K5 w - - 0 1"};
+    std::vector<bool> expect{
+        // clang-format off
+      1, 0, 1, 0, 0, 0, 0, 0,
+      0, 0, 0, 1, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      1, 0, 1, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+        // clang-format on
+    };
+    EXPECT_EQ(Engine::GetAllLegalMoves(board, Square{"b6"}), expect);
+  }
+  // Black
+  {
+    Board board{"1q2N3/3pR1n1/1R3P2/K1kP3N/5Q2/7B/p2p3P/8 b - - 0 1"};
+    std::vector<bool> expect{
+        // clang-format off
+      0, 0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 1, 0, 0, 0,
+      0, 0, 0, 0, 0, 1, 0, 1,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0,
+        // clang-format on
+    };
+    EXPECT_EQ(Engine::GetAllLegalMoves(board, Square{"g7"}), expect);
+  }
+}
+
 TEST(LegalMovesTest, PawnLegalMove) {
   // White
   {
@@ -203,6 +240,21 @@ TEST(LegalMovesTest, PawnPromotion) {
             MoveDescription::PAWN_PROMOTION_NOT_SPECIFIED);
   EXPECT_EQ(Engine::IsLegalMove(Board{"b1B5/3P4/PRN2P2/4Nk2/n4p2/5p2/3K1p1p/r7 b - - 0 1"}, Move{"h2h1"}),
             MoveDescription::PAWN_PROMOTION_NOT_SPECIFIED);
+}
+
+TEST(ProcessMoveTest, ProcessSimpleMoves) {
+  EXPECT_EQ(static_cast<std::string>(
+                Engine::ProcessMove(Board{"8/P5n1/2P5/Kn5k/p3PB2/8/3R1pbp/2Nqb3 w - - 0 1"}, Move{"f4h2"})),
+            "8/P5n1/2P5/Kn5k/p3P3/8/3R1pbB/2Nqb3 b - - 0 1");
+  EXPECT_EQ(static_cast<std::string>(
+                Engine::ProcessMove(Board{"8/5PPp/Pk2B1p1/5nP1/1K3b2/1b1N1r2/p2p4/8 w - - 0 1"}, Move{"b4b3"})),
+            "8/5PPp/Pk2B1p1/5nP1/5b2/1K1N1r2/p2p4/8 b - - 0 1");
+  EXPECT_EQ(static_cast<std::string>(
+                Engine::ProcessMove(Board{"6n1/Bp1Pp1r1/6P1/k2p4/P7/1R6/P1P5/K1b2n2 b - - 0 1"}, Move{"b7b5"})),
+            "6n1/B2Pp1r1/6P1/kp1p4/P7/1R6/P1P5/K1b2n2 w - b6 0 2");
+  EXPECT_EQ(static_cast<std::string>(
+                Engine::ProcessMove(Board{"8/P2n1p2/qp4B1/p7/3pN2K/8/p1kP4/BR2r3 b - - 0 1"}, Move{"d7c5"})),
+            "8/P4p2/qp4B1/p1n5/3pN2K/8/p1kP4/BR2r3 w - - 1 2");
 }
 
 #pragma clang diagnostic pop
