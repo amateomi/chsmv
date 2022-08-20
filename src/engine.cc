@@ -6,13 +6,13 @@
 
 #include "engine.h"
 
-#include <cstdlib>
 #include <iostream>
 
 namespace chsmv {
 
+// TODO: Implement ProcessMove
+// TODO: Add castling
 // TODO: Add deep validation
-// TODO: Add more variants for MoveDescription
 MoveDescription Engine::IsLegalMove(const Board& board, const Move& move) noexcept {
   if (!board[move.Origin()].has_value()) {
     return MoveDescription::ILLEGAL;
@@ -22,7 +22,7 @@ MoveDescription Engine::IsLegalMove(const Board& board, const Move& move) noexce
   if (move.Origin() == move.Destination()) {
     return MoveDescription::ILLEGAL;
   }
-  if (piece.color != board.GetMoveTurn()) {
+  if (piece.color != board.MoveTurn()) {
     return MoveDescription::ILLEGAL;
   }
   if (IsSameColor(piece, board[move.Destination()])) {
@@ -56,8 +56,73 @@ MoveDescription Engine::IsLegalMove(const Board& board, const Move& move) noexce
   return is_move_success ? MoveDescription::LEGAL : MoveDescription::ILLEGAL;
 }
 
-std::pair<BoardDescription, std::string> Engine::ProcessMove(const Board& board, const Move& move) noexcept {
-  return {};
+Board Engine::ProcessMove(const Board& board, const Move& move) noexcept {
+  Board new_board{board};
+
+  // Change move turn
+  new_board.MoveTurn() = new_board.MoveTurn() == Piece::Color::WHITE ? Piece::Color::BLACK : Piece::Color::WHITE;
+
+  // Update castling ability
+  if (move.Origin().GetIndex() == 0 || move.Destination().GetIndex() == 0) {
+    new_board.Castling(Piece::Color::BLACK, Board::CastlingSide::LONG) = false;
+  }
+  if (move.Origin().GetIndex() == 7 || move.Destination().GetIndex() == 7) {
+    new_board.Castling(Piece::Color::BLACK, Board::CastlingSide::SHORT) = false;
+  }
+  if (move.Origin().GetIndex() == 56 || move.Destination().GetIndex() == 56) {
+    new_board.Castling(Piece::Color::WHITE, Board::CastlingSide::LONG) = false;
+  }
+  if (move.Origin().GetIndex() == 63 || move.Destination().GetIndex() == 63) {
+    new_board.Castling(Piece::Color::WHITE, Board::CastlingSide::SHORT) = false;
+  }
+  if (new_board[move.Origin()]->type == Piece::Type::KING) {
+    switch (new_board[move.Origin()]->color) {
+      case Piece::Color::WHITE:
+        new_board.Castling(Piece::Color::WHITE, Board::CastlingSide::LONG) = false;
+        new_board.Castling(Piece::Color::WHITE, Board::CastlingSide::SHORT) = false;
+        break;
+      case Piece::Color::BLACK:
+        new_board.Castling(Piece::Color::BLACK, Board::CastlingSide::LONG) = false;
+        new_board.Castling(Piece::Color::BLACK, Board::CastlingSide::SHORT) = false;
+        break;
+    }
+  }
+
+  // Update En passant square
+  if (new_board[move.Origin()]->type == Piece::Type::PAWN && IsPawnMove(board, move) && move.RankDistance() == 2) {
+    new_board.EnPassantSquare() = Square{move.Origin().GetFile(), move.Origin().GetRank() + move.RankDirection()};
+  } else {
+    new_board.EnPassantSquare() = std::nullopt;
+  }
+
+  // Update halfmove clock
+  if (board[move.Origin()]->type == Piece::Type::PAWN || board[move.Destination()].has_value()) {
+    new_board.Halfmove() = 0;
+  } else {
+    new_board.Halfmove()++;
+  }
+
+  // Update fullmove counter
+  if (board.MoveTurn() == Piece::Color::BLACK) {
+    new_board.Fullmove()++;
+  }
+
+  // Update board position
+  if (new_board[move.Origin()]->type == Piece::Type::KING && IsCastling(board, move)) {
+    ProcessCastling(new_board, move);
+
+  } else if (new_board[move.Origin()]->type == Piece::Type::PAWN && IsEnPassant(board, move)) {
+    ProcessEnPassant(new_board, move);
+
+  } else if (move.GetPromotion() != Move::Promotion::NONE) {
+    ProcessPromotion(new_board, move);
+
+  } else {
+    new_board[move.Destination()] = std::nullopt;
+    std::swap(new_board[move.Origin()], new_board[move.Destination()]);
+  }
+
+  return new_board;
 }
 
 std::vector<bool> Engine::GetAllLegalMoves(const Board& board, const Square& origin) noexcept {
@@ -86,6 +151,8 @@ bool Engine::IsKingMove(const Board& board, const Move& move) noexcept {
 }
 
 bool Engine::IsCastling(const Board& board, const Move& move) noexcept { return false; }
+
+void Engine::ProcessCastling(Board& board, const Move& move) noexcept {}
 
 bool Engine::IsQueenMove(const Board& board, const Move& move) noexcept {
   return IsRookMove(board, move) || IsBishopMove(board, move);
@@ -143,10 +210,8 @@ bool Engine::IsBishopMove(const Board& board, const Move& move) noexcept {
 }
 
 bool Engine::IsKnightMove(const Board& board, const Move& move) noexcept {
-  if (board[move.Destination()].has_value() && board[move.Destination()]->color == board[move.Origin()]->color) {
-    return false;
-  }
-  return abs(move.FileDistance() - move.RankDistance()) == 1;
+  return (move.FileDistance() == 1 && move.RankDistance() == 2) ||
+         (move.FileDistance() == 2 && move.RankDistance() == 1);
 }
 
 bool Engine::IsPawnMove(const Board& board, const Move& move) noexcept {
@@ -179,12 +244,16 @@ bool Engine::IsPawnPromotion(const Board& board, const Move& move) noexcept {
          (move.Destination().GetRank() == 0 || move.Destination().GetRank() == Square::total_ranks_ - 1);
 }
 
+void Engine::ProcessPromotion(Board& board, const Move& move) noexcept {}
+
 bool Engine::IsEnPassant(const Board& board, const Move& move) noexcept {
   if (!IsValidPawnMoveDirection(board, move)) {
     return false;
   }
-  return board.GetEnPassantSquare().has_value() && board.GetEnPassantSquare().value() == move.Destination() &&
+  return board.EnPassantSquare().has_value() && board.EnPassantSquare().value() == move.Destination() &&
          move.FileDistance() == 1 && move.RankDistance() == 1;
 }
+
+void Engine::ProcessEnPassant(Board& board, const Move& move) noexcept {}
 
 }  // namespace chsmv
