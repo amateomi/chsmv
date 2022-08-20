@@ -124,15 +124,23 @@ const Board::OptionalPiece& Board::operator[](const Square& square) const noexce
   return squares_[square.GetIndex()];
 }
 
-Piece::Color Board::GetMoveTurn() const noexcept { return move_turn_; }
-
-const std::optional<Square>& Board::GetEnPassantSquare() const noexcept { return en_passant_square_; }
+Piece::Color& Board::MoveTurn() noexcept { return move_turn_; }
+Piece::Color Board::MoveTurn() const noexcept { return move_turn_; }
 
 bool& Board::Castling(Piece::Color color, Board::CastlingSide side) noexcept {
-  return castling_ability_[(color == Piece::Color::WHITE ? 0 : 2) + (side == CastlingSide::KING ? 0 : 1)];
+  return castling_ability_[(color == Piece::Color::WHITE ? 0 : 2) + (side == CastlingSide::SHORT ? 0 : 1)];
 }
-const bool& Board::Castling(Piece::Color color, Board::CastlingSide side) const noexcept {
-  return castling_ability_[(color == Piece::Color::WHITE ? 0 : 2) + (side == CastlingSide::KING ? 0 : 1)];
+bool Board::Castling(Piece::Color color, Board::CastlingSide side) const noexcept {
+  return castling_ability_[(color == Piece::Color::WHITE ? 0 : 2) + (side == CastlingSide::SHORT ? 0 : 1)];
 }
+
+std::optional<Square>& Board::EnPassantSquare() noexcept { return en_passant_square_; }
+const std::optional<Square>& Board::EnPassantSquare() const noexcept { return en_passant_square_; }
+
+int& Board::Halfmove() noexcept { return halfmove_count_; }
+int Board::Halfmove() const noexcept { return halfmove_count_; }
+
+int& Board::Fullmove() noexcept { return fullmove_count_; }
+int Board::Fullmove() const noexcept { return fullmove_count_; }
 
 }  // namespace chsmv

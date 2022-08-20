@@ -26,7 +26,7 @@ class Board {
 
   // Types
   using OptionalPiece = std::optional<Piece>;
-  enum class CastlingSide : int { KING, QUEEN };
+  enum class CastlingSide : int { SHORT, LONG };
 
   // Constructors
   explicit Board(std::string_view board_in_fen = start_board_position_in_fen_);
@@ -40,19 +40,23 @@ class Board {
   const OptionalPiece& operator[](const Square& square) const noexcept;
 
   // Functions
-  [[nodiscard]] Piece::Color GetMoveTurn() const noexcept;
-
-  [[nodiscard]] const std::optional<Square>& GetEnPassantSquare() const noexcept;
+  [[nodiscard]] Piece::Color& MoveTurn() noexcept;
+  [[nodiscard]] Piece::Color MoveTurn() const noexcept;
 
   bool& Castling(Piece::Color color, CastlingSide side) noexcept;
-  [[nodiscard]] const bool& Castling(Piece::Color color, CastlingSide side) const noexcept;
+  [[nodiscard]] bool Castling(Piece::Color color, CastlingSide side) const noexcept;
+
+  [[nodiscard]] std::optional<Square>& EnPassantSquare() noexcept;
+  [[nodiscard]] const std::optional<Square>& EnPassantSquare() const noexcept;
+
+  int& Halfmove() noexcept;
+  [[nodiscard]] int Halfmove() const noexcept;
+
+  int& Fullmove() noexcept;
+  [[nodiscard]] int Fullmove() const noexcept;
 
  private:
   // Data
-  Piece::Color move_turn_;
-  std::optional<Square> en_passant_square_;
-  int halfmove_count_{};
-  int fullmove_count_{};
   /**
    * @note Indexing starts from a8 to h1:\n
    *     a  b  c  d  e  f  g  h \n
@@ -66,7 +70,11 @@ class Board {
    * 1 |..|..|..|..|..|..|..|63|\n
    */
   std::array<OptionalPiece, Square::total_squares_> squares_;
+  Piece::Color move_turn_;
   std::array<bool, 4> castling_ability_{};
+  std::optional<Square> en_passant_square_;
+  int halfmove_count_{};
+  int fullmove_count_{};
 };
 
 }  // namespace chsmv
